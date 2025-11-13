@@ -149,8 +149,8 @@ export const incrementalCommand = async () => {
           lastRun: new Date(),
         });
 
-        /* -- Sync Stores -- */
-        console.log('Syncing stores...');
+        /* -- sync stores -- */
+        console.log('Syncing stores.');
         const targetStoreRepo =
           transactionalEntityManager.getRepository(DimStore);
         lastSync = await syncStateRepo.findOneBy({ tableName: 'store' });
@@ -184,8 +184,8 @@ export const incrementalCommand = async () => {
         }
         await syncStateRepo.save({ tableName: 'store', lastRun: new Date() });
 
-        /* -- Sync Customers -- */
-        console.log('Syncing customers...');
+        /* -- sync customers -- */
+        console.log('Syncing customers.');
         const targetCustomerRepo =
           transactionalEntityManager.getRepository(DimCustomer);
         lastSync = await syncStateRepo.findOneBy({ tableName: 'customer' });
@@ -230,8 +230,8 @@ export const incrementalCommand = async () => {
           lastRun: new Date(),
         });
 
-        /* -- Sync Films -- */
-        console.log('Syncing films...');
+        /* -- sync films -- */
+        console.log('Syncing films.');
         const targetFilmRepo =
           transactionalEntityManager.getRepository(DimFilm);
         lastSync = await syncStateRepo.findOneBy({ tableName: 'film' });
@@ -328,8 +328,8 @@ export const incrementalCommand = async () => {
 
         /* sync bridges and facts */
 
-        /* -- Sync BridgeFilmActor -- */
-        console.log('Syncing bridge_film_actor...');
+        /* -- sync bridge_film_actor -- */
+        console.log('Syncing bridge_film_actor.');
         const targetFilmActorRepo =
           transactionalEntityManager.getRepository(BridgeFilmActor);
         lastSync = await syncStateRepo.findOneBy({
@@ -365,8 +365,8 @@ export const incrementalCommand = async () => {
           lastRun: new Date(),
         });
 
-        /* -- Sync BridgeFilmCategory -- */
-        console.log('Syncing bridge_film_category...');
+        /* -- sync bridge_film_category -- */
+        console.log('Syncing bridge_film_category.');
         const targetFilmCategoryRepo =
           transactionalEntityManager.getRepository(BridgeFilmCategory);
         lastSync = await syncStateRepo.findOneBy({
@@ -402,8 +402,8 @@ export const incrementalCommand = async () => {
           lastRun: new Date(),
         });
 
-        /* -- Sync FactRental -- */
-        console.log('Syncing fact_rental...');
+        /* -- sync fact_rental -- */
+        console.log('Syncing fact_rental.');
         const targetRentalRepo =
           transactionalEntityManager.getRepository(FactRental);
         lastSync = await syncStateRepo.findOneBy({ tableName: 'fact_rental' });
@@ -462,8 +462,8 @@ export const incrementalCommand = async () => {
           lastRun: new Date(),
         });
 
-        /* -- Sync FactPayment -- */
-        console.log('Syncing fact_payment...');
+        /* -- sync fact_payment -- */
+        console.log('Syncing fact_payment.');
         const targetPaymentRepo =
           transactionalEntityManager.getRepository(FactPayment);
         lastSync = await syncStateRepo.findOneBy({ tableName: 'fact_payment' });

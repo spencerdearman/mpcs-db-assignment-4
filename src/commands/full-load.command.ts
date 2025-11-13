@@ -27,7 +27,6 @@ import {
 } from '../models/analytics.models';
 import { generateKey, createDimDate, duration } from '../utils/date.utils';
 
-/* --- full-load command --- */
 export const fullLoadCommand = async () => {
   try {
     console.log(chalk.cyan.bold('\nStarting full-load command.'));
