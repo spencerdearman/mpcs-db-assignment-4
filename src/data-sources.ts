@@ -9,7 +9,7 @@ export const mysqlDataSource = new DataSource({
   host: 'localhost',
   port: 3306,
   username: 'root',
-  password: 'PASSWORD' /* README SETUP STEP 2: enter your own root password */,
+  password: 'PASSWORD' /* enter your own root password */,
   database: 'sakila',
   entities: Object.values(SourceModels),
   logging: false,
