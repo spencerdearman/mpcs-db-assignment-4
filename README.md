@@ -6,7 +6,7 @@
 once so just in case) run `npm uninstall chalk` then `npm install chalk@4`
 
 2. **Setup assumes that you have the sakila MySQL dabatase locally (localhost)**. 
-Go to the [data-sources.ts](data-sources.ts) file and edit **line 12** to add your
+Go to the [data-sources.ts](src/data-sources.ts) file and edit **line 12** to add your
 own root password.
 
 ## Commands
