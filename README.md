@@ -61,7 +61,7 @@
 
 ## Diagrams
 #### Source Schema
-[Source Schema](diagrams/MySQL.png)
+[Source Schema](src/diagrams/MySQL.png)
 
 #### Target (Analytics) Schema
-[Target Schema](diagrams/SQLite.png)
+[Target Schema](src/diagrams/SQLite.png)

@@ -17,7 +17,7 @@ const runCli = async (command: string) => {
 let realMysql: DataSource;
 const testSqlite = sqliteDataSource;
 
-/* connect to mySql db */
+/* connect to MySQL db */
 beforeAll(async () => {
   realMysql = mysqlDataSource;
   await realMysql.initialize();
@@ -42,7 +42,7 @@ afterEach(async () => {
     .save({ actorId: 1, firstName: 'SPENCER', lastName: 'DEARMAN' });
   const jestActor = await realMysql
     .getRepository(Actor)
-    .findOneBy({ firstName: 'JEST' });
+    .findOneBy({ firstName: 'FAKE' });
   if (jestActor) {
     await realMysql.getRepository(Actor).delete(jestActor.actorId);
   }
@@ -114,7 +114,7 @@ test('3. Incremental command (new data)', async () => {
 
   /* add a new actor to the MySQL database */
   const newActor = await realMysql.getRepository(Actor).save({
-    firstName: 'JEST',
+    firstName: 'FAKE',
     lastName: 'TEST',
   });
 
@@ -125,7 +125,7 @@ test('3. Incremental command (new data)', async () => {
   const targetRepo = getTestDbRepo(DimActor);
   const syncedActor = await targetRepo.findOneBy({ actorId: newActor.actorId });
   expect(syncedActor).toBeDefined();
-  expect(syncedActor?.firstName).toBe('JEST');
+  expect(syncedActor?.firstName).toBe('FAKE');
 });
 
 /* test incremental (updates) */
