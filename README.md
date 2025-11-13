@@ -58,3 +58,10 @@
 #### Run Validate Test
 
 `npm test -- -t "Validate"`
+
+## Diagrams
+#### Source Schema
+[Source Schema](diagrams/MySQL.png)
+
+#### Target (Analytics) Schema
+[Target Schema](diagrams/SQLite.png)

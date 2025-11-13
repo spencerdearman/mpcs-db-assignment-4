@@ -269,7 +269,7 @@ export const incrementalCommand = async () => {
         await syncStateRepo.save({ tableName: 'film', lastRun: new Date() });
 
         /* sync dimensions */
-        console.log('Syncing date dimension...');
+        console.log('Syncing date dimension.');
         let lastDateSync = await syncStateRepo.findOneBy({
           tableName: 'dim_date_sync',
         });

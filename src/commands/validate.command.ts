@@ -23,7 +23,6 @@ export const validateCommand = async () => {
     if (!mysqlDataSource.isInitialized) await mysqlDataSource.initialize();
     if (!sqliteDataSource.isInitialized) await sqliteDataSource.initialize();
     console.log(chalk.green('Databases connected.'));
-
     console.log(
       chalk.yellow(`\n--- Validating Data Since ${thirtyDaysAgoString} ---`)
     );
@@ -86,7 +85,6 @@ export const validateCommand = async () => {
     /* standardize floats */
     const sourceSumFloat = parseFloat(sourcePaymentSum).toFixed(2);
     const targetSumFloat = parseFloat(targetPaymentSum).toFixed(2);
-
     if (sourceSumFloat === targetSumFloat) {
       console.log(chalk.green(`Payment Total:  PASSED ($${sourceSumFloat})`));
     } else {
