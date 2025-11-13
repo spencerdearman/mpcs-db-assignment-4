@@ -1,6 +1,6 @@
-import chalk from "chalk";
-import { mysqlDataSource, sqliteDataSource } from "../data-sources";
-import { EntityManager, MoreThan } from "typeorm";
+import chalk from 'chalk';
+import { mysqlDataSource, sqliteDataSource } from '../data-sources';
+import { EntityManager, MoreThan } from 'typeorm';
 import {
   Actor,
   Category,
@@ -12,7 +12,7 @@ import {
   Rental,
   Payment,
   Staff,
-} from "../models/source.models";
+} from '../models/source.models';
 import {
   DimActor,
   DimCategory,
@@ -25,15 +25,15 @@ import {
   FactPayment,
   SyncState,
   DimDate,
-} from "../models/analytics.models";
-import { generateKey, createDimDate, duration } from "../utils/date.utils";
+} from '../models/analytics.models';
+import { generateKey, createDimDate, duration } from '../utils/date.utils';
 
 export const incrementalCommand = async () => {
   try {
-    console.log(chalk.cyan.bold("\nStarting incremental command."));
+    console.log(chalk.cyan.bold('\nStarting incremental command.'));
     if (!mysqlDataSource.isInitialized) await mysqlDataSource.initialize();
     if (!sqliteDataSource.isInitialized) await sqliteDataSource.initialize();
-    console.log(chalk.green("Databases connected."));
+    console.log(chalk.green('Databases connected.'));
 
     await sqliteDataSource.transaction(
       async (transactionalEntityManager: EntityManager) => {
@@ -41,7 +41,7 @@ export const incrementalCommand = async () => {
           transactionalEntityManager.getRepository(SyncState);
 
         /* build key maps */
-        console.log(chalk.yellow("\n--- Creating Key Maps ---"));
+        console.log(chalk.yellow('\n--- Creating Key Maps ---'));
 
         const actorKeyMap = new Map<number, number>();
         (
@@ -68,16 +68,16 @@ export const incrementalCommand = async () => {
           await transactionalEntityManager.getRepository(DimFilm).find()
         ).forEach((f) => filmKeyMap.set(f.filmId, f.filmKey));
 
-        console.log(chalk.green.bold("Key maps created."));
+        console.log(chalk.green.bold('Key maps created.'));
 
         /* sync dimensions */
-        console.log(chalk.yellow("\n--- Syncing Dimensions ---"));
+        console.log(chalk.yellow('\n--- Syncing Dimensions ---'));
 
         /* -- sync actors -- */
-        console.log("Syncing actors.");
+        console.log('Syncing actors.');
         const targetActorRepo =
           transactionalEntityManager.getRepository(DimActor);
-        let lastSync = await syncStateRepo.findOneBy({ tableName: "actor" });
+        let lastSync = await syncStateRepo.findOneBy({ tableName: 'actor' });
         let lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
         const newSourceActors = await mysqlDataSource
@@ -103,15 +103,15 @@ export const incrementalCommand = async () => {
           savedActors.forEach((a) => actorKeyMap.set(a.actorId, a.actorKey));
           console.log(chalk.green(`Synced ${savedActors.length} actors.`));
         } else {
-          console.log(chalk.blue("No new actors to sync."));
+          console.log(chalk.blue('No new actors to sync.'));
         }
-        await syncStateRepo.save({ tableName: "actor", lastRun: new Date() });
+        await syncStateRepo.save({ tableName: 'actor', lastRun: new Date() });
 
         /* -- sync sategories -- */
-        console.log("Syncing categories.");
+        console.log('Syncing categories.');
         const targetCategoryRepo =
           transactionalEntityManager.getRepository(DimCategory);
-        lastSync = await syncStateRepo.findOneBy({ tableName: "category" });
+        lastSync = await syncStateRepo.findOneBy({ tableName: 'category' });
         lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
         const newSourceCategories = await mysqlDataSource
@@ -138,27 +138,29 @@ export const incrementalCommand = async () => {
           savedCategories.forEach((c) =>
             categoryKeyMap.set(c.categoryId, c.categoryKey)
           );
-          console.log(chalk.green(`Synced ${savedCategories.length} categories.`));
+          console.log(
+            chalk.green(`Synced ${savedCategories.length} categories.`)
+          );
         } else {
-          console.log(chalk.blue("No new categories to sync."));
+          console.log(chalk.blue('No new categories to sync.'));
         }
         await syncStateRepo.save({
-          tableName: "category",
+          tableName: 'category',
           lastRun: new Date(),
         });
 
         /* -- Sync Stores -- */
-        console.log("Syncing stores...");
+        console.log('Syncing stores...');
         const targetStoreRepo =
           transactionalEntityManager.getRepository(DimStore);
-        lastSync = await syncStateRepo.findOneBy({ tableName: "store" });
+        lastSync = await syncStateRepo.findOneBy({ tableName: 'store' });
         lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
         const newSourceStores = await mysqlDataSource
           .getRepository(Store)
           .find({
             where: { lastUpdate: MoreThan(lastSyncTime) },
-            relations: ["address", "address.city", "address.city.country"],
+            relations: ['address', 'address.city', 'address.city.country'],
           });
 
         if (newSourceStores.length > 0) {
@@ -178,22 +180,22 @@ export const incrementalCommand = async () => {
           savedStores.forEach((s) => storeKeyMap.set(s.storeId, s.storeKey));
           console.log(chalk.green(`Synced ${savedStores.length} stores.`));
         } else {
-          console.log(chalk.blue("No new stores to sync."));
+          console.log(chalk.blue('No new stores to sync.'));
         }
-        await syncStateRepo.save({ tableName: "store", lastRun: new Date() });
+        await syncStateRepo.save({ tableName: 'store', lastRun: new Date() });
 
         /* -- Sync Customers -- */
-        console.log("Syncing customers...");
+        console.log('Syncing customers...');
         const targetCustomerRepo =
           transactionalEntityManager.getRepository(DimCustomer);
-        lastSync = await syncStateRepo.findOneBy({ tableName: "customer" });
+        lastSync = await syncStateRepo.findOneBy({ tableName: 'customer' });
         lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
         const newSourceCustomers = await mysqlDataSource
           .getRepository(Customer)
           .find({
             where: { lastUpdate: MoreThan(lastSyncTime) },
-            relations: ["address", "address.city", "address.city.country"],
+            relations: ['address', 'address.city', 'address.city.country'],
           });
 
         if (newSourceCustomers.length > 0) {
@@ -217,25 +219,27 @@ export const incrementalCommand = async () => {
           savedCustomers.forEach((c) =>
             customerKeyMap.set(c.customerId, c.customerKey)
           );
-          console.log(chalk.green(`Synced ${savedCustomers.length} customers.`));
+          console.log(
+            chalk.green(`Synced ${savedCustomers.length} customers.`)
+          );
         } else {
-          console.log(chalk.blue("No new customers to sync."));
+          console.log(chalk.blue('No new customers to sync.'));
         }
         await syncStateRepo.save({
-          tableName: "customer",
+          tableName: 'customer',
           lastRun: new Date(),
         });
 
         /* -- Sync Films -- */
-        console.log("Syncing films...");
+        console.log('Syncing films...');
         const targetFilmRepo =
           transactionalEntityManager.getRepository(DimFilm);
-        lastSync = await syncStateRepo.findOneBy({ tableName: "film" });
+        lastSync = await syncStateRepo.findOneBy({ tableName: 'film' });
         lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
         const newSourceFilms = await mysqlDataSource.getRepository(Film).find({
           where: { lastUpdate: MoreThan(lastSyncTime) },
-          relations: ["language"],
+          relations: ['language'],
         });
 
         if (newSourceFilms.length > 0) {
@@ -248,7 +252,7 @@ export const incrementalCommand = async () => {
             newDimFilm.length = sourceFilm.length;
             newDimFilm.language = sourceFilm.language
               ? sourceFilm.language.name
-              : "Unknown";
+              : 'Unknown';
             newDimFilm.releaseYear = sourceFilm.releaseYear;
             newDimFilm.lastUpdate = sourceFilm.lastUpdate;
 
@@ -260,14 +264,14 @@ export const incrementalCommand = async () => {
           savedFilms.forEach((f) => filmKeyMap.set(f.filmId, f.filmKey));
           console.log(chalk.green(`Synced ${savedFilms.length} films.`));
         } else {
-          console.log(chalk.blue("No new films to sync."));
+          console.log(chalk.blue('No new films to sync.'));
         }
-        await syncStateRepo.save({ tableName: "film", lastRun: new Date() });
+        await syncStateRepo.save({ tableName: 'film', lastRun: new Date() });
 
         /* sync dimensions */
-        console.log("Syncing date dimension...");
+        console.log('Syncing date dimension...');
         let lastDateSync = await syncStateRepo.findOneBy({
-          tableName: "dim_date_sync",
+          tableName: 'dim_date_sync',
         });
         let lastDateSyncTime = lastDateSync
           ? lastDateSync.lastRun
@@ -288,13 +292,13 @@ export const incrementalCommand = async () => {
         const newDateSet = new Set<string>();
 
         newRentalDates.forEach((r) => {
-          newDateSet.add(r.rentalDate.toISOString().split("T")[0]!);
+          newDateSet.add(r.rentalDate.toISOString().split('T')[0]!);
           if (r.returnDate) {
-            newDateSet.add(r.returnDate.toISOString().split("T")[0]!);
+            newDateSet.add(r.returnDate.toISOString().split('T')[0]!);
           }
         });
         newPaymentDates.forEach((p) => {
-          newDateSet.add(p.paymentDate.toISOString().split("T")[0]!);
+          newDateSet.add(p.paymentDate.toISOString().split('T')[0]!);
         });
 
         const newDimDates: DimDate[] = [];
@@ -311,23 +315,25 @@ export const incrementalCommand = async () => {
           await transactionalEntityManager
             .getRepository(DimDate)
             .save(newDimDates);
-          console.log(chalk.green(`Loaded ${newDimDates.length} new dates into dim_date.`));
+          console.log(
+            chalk.green(`Loaded ${newDimDates.length} new dates into dim_date.`)
+          );
         } else {
-          console.log(chalk.blue("No new dates to add."));
+          console.log(chalk.blue('No new dates to add.'));
         }
         await syncStateRepo.save({
-          tableName: "dim_date_sync",
+          tableName: 'dim_date_sync',
           lastRun: new Date(),
         });
 
         /* sync bridges and facts */
 
         /* -- Sync BridgeFilmActor -- */
-        console.log("Syncing bridge_film_actor...");
+        console.log('Syncing bridge_film_actor...');
         const targetFilmActorRepo =
           transactionalEntityManager.getRepository(BridgeFilmActor);
         lastSync = await syncStateRepo.findOneBy({
-          tableName: "bridge_film_actor",
+          tableName: 'bridge_film_actor',
         });
         lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
@@ -348,21 +354,23 @@ export const incrementalCommand = async () => {
             .filter((b) => b.filmKey && b.actorKey);
 
           await targetFilmActorRepo.save(bridgeToSave);
-          console.log(chalk.green(`Synced ${bridgeToSave.length} film-actor links.`));
+          console.log(
+            chalk.green(`Synced ${bridgeToSave.length} film-actor links.`)
+          );
         } else {
-          console.log(chalk.blue("No new film-actor links to sync."));
+          console.log(chalk.blue('No new film-actor links to sync.'));
         }
         await syncStateRepo.save({
-          tableName: "bridge_film_actor",
+          tableName: 'bridge_film_actor',
           lastRun: new Date(),
         });
 
         /* -- Sync BridgeFilmCategory -- */
-        console.log("Syncing bridge_film_category...");
+        console.log('Syncing bridge_film_category...');
         const targetFilmCategoryRepo =
           transactionalEntityManager.getRepository(BridgeFilmCategory);
         lastSync = await syncStateRepo.findOneBy({
-          tableName: "bridge_film_category",
+          tableName: 'bridge_film_category',
         });
         lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
@@ -383,20 +391,22 @@ export const incrementalCommand = async () => {
             .filter((b) => b.filmKey && b.categoryKey);
 
           await targetFilmCategoryRepo.save(bridgeToSave);
-          console.log(chalk.green(`Synced ${bridgeToSave.length} film-category links.`));
+          console.log(
+            chalk.green(`Synced ${bridgeToSave.length} film-category links.`)
+          );
         } else {
-          console.log(chalk.blue("No new film-category links to sync."));
+          console.log(chalk.blue('No new film-category links to sync.'));
         }
         await syncStateRepo.save({
-          tableName: "bridge_film_category",
+          tableName: 'bridge_film_category',
           lastRun: new Date(),
         });
 
         /* -- Sync FactRental -- */
-        console.log("Syncing fact_rental...");
+        console.log('Syncing fact_rental...');
         const targetRentalRepo =
           transactionalEntityManager.getRepository(FactRental);
-        lastSync = await syncStateRepo.findOneBy({ tableName: "fact_rental" });
+        lastSync = await syncStateRepo.findOneBy({ tableName: 'fact_rental' });
         lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
         const newSourceRentals = await mysqlDataSource
@@ -406,7 +416,7 @@ export const incrementalCommand = async () => {
               { rentalDate: MoreThan(lastSyncTime) },
               { lastUpdate: MoreThan(lastSyncTime) },
             ],
-            relations: ["inventory", "inventory.store"],
+            relations: ['inventory', 'inventory.store'],
           });
 
         if (newSourceRentals.length > 0) {
@@ -445,18 +455,18 @@ export const incrementalCommand = async () => {
           await targetRentalRepo.save(rentalsToSave);
           console.log(chalk.green(`Synced ${rentalsToSave.length} rentals.`));
         } else {
-          console.log(chalk.blue("No new rentals to sync."));
+          console.log(chalk.blue('No new rentals to sync.'));
         }
         await syncStateRepo.save({
-          tableName: "fact_rental",
+          tableName: 'fact_rental',
           lastRun: new Date(),
         });
 
         /* -- Sync FactPayment -- */
-        console.log("Syncing fact_payment...");
+        console.log('Syncing fact_payment...');
         const targetPaymentRepo =
           transactionalEntityManager.getRepository(FactPayment);
-        lastSync = await syncStateRepo.findOneBy({ tableName: "fact_payment" });
+        lastSync = await syncStateRepo.findOneBy({ tableName: 'fact_payment' });
         lastSyncTime = lastSync ? lastSync.lastRun : new Date(0);
 
         /* find new payments based on payment_date */
@@ -464,7 +474,7 @@ export const incrementalCommand = async () => {
           .getRepository(Payment)
           .find({
             where: { paymentDate: MoreThan(lastSyncTime) },
-            relations: ["staff"],
+            relations: ['staff'],
           });
 
         if (newSourcePayments.length > 0) {
@@ -498,25 +508,25 @@ export const incrementalCommand = async () => {
           await targetPaymentRepo.save(paymentsToSave);
           console.log(chalk.green(`Synced ${paymentsToSave.length} payments.`));
         } else {
-          console.log(chalk.blue("No new payments to sync."));
+          console.log(chalk.blue('No new payments to sync.'));
         }
         await syncStateRepo.save({
-          tableName: "fact_payment",
+          tableName: 'fact_payment',
           lastRun: new Date(),
         });
       }
     );
 
-    console.log(chalk.green.bold("\nIncremental load complete."));
+    console.log(chalk.green.bold('\nIncremental load complete.'));
   } catch (error) {
-    console.error(chalk.red.bold("Error during incremental load:", error));
+    console.error(chalk.red.bold('Error during incremental load:', error));
     process.exit(1);
   } finally {
     /* destroy if not in a test environment */
-    if (process.env.NODE_ENV !== "test") {
+    if (process.env.NODE_ENV !== 'test') {
       if (mysqlDataSource.isInitialized) await mysqlDataSource.destroy();
       if (sqliteDataSource.isInitialized) await sqliteDataSource.destroy();
-      console.log(chalk.green("\nDatabase connections closed."));
+      console.log(chalk.green('\nDatabase connections closed.'));
     }
   }
 };

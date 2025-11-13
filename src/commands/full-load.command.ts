@@ -10,7 +10,7 @@ import {
   FilmActor,
   FilmCategory,
   Rental,
-  Payment
+  Payment,
 } from '../models/source.models';
 import {
   DimActor,
