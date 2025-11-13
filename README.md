@@ -10,36 +10,36 @@ Go to the [data-sources.ts](src/data-sources.ts) file and edit **line 12** to ad
 own root password.
 
 ## Commands
-### Init Command
+#### Init Command
 `npx ts-node src/index.ts init`
 
-### Full-Load Command
+#### Full-Load Command
 `npx ts-node src/index.ts full-load`
 
-### Incremental Command
+#### Incremental Command
 `npx ts-node src/index.ts incremental`
 
-### Validate Command
+#### Validate Command
 `npx ts-node src/index.ts validate` 
 
-### Delete Database
+#### Delete Database
 `rm analytics.db`
 
 ## Tests
-### Run All Tests
+#### Run All Tests
 `npm test`
 
-### Run Init Test
+#### Run Init Test
 `npm test -- -t "Init"`
 
-### Run Full-Load Test
+#### Run Full-Load Test
 `npm test -- -t "Full-load"`
 
-### Run Incremental (new data) Test
+#### Run Incremental (new data) Test
 `npm test -- -t "3. Incremental command"`
 
-### Run Incremental (no new data) Test
+#### Run Incremental (no new data) Test
 `npm test -- -t "4. Incremental command"`
 
-### Run Validate Test
+#### Run Validate Test
 `npm test -- -t "Validate"`
