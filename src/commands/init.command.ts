@@ -3,7 +3,7 @@ import { sqliteDataSource } from '../data-sources';
 
 export const initCommand = async () => {
   try {
-    console.log('Initializing analytics database...');
+    console.log(chalk.cyan.bold('\nStarting init command.'));
     if (!sqliteDataSource.isInitialized) await sqliteDataSource.initialize();
     await sqliteDataSource.synchronize();
     console.log(chalk.green.bold('Analytics database initialized.'));

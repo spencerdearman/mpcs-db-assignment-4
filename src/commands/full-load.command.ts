@@ -10,8 +10,7 @@ import {
   FilmActor,
   FilmCategory,
   Rental,
-  Payment,
-  Staff,
+  Payment
 } from '../models/source.models';
 import {
   DimActor,
@@ -31,7 +30,7 @@ import { generateKey, createDimDate, duration } from '../utils/date.utils';
 /* --- full-load command --- */
 export const fullLoadCommand = async () => {
   try {
-    console.log('Starting full load command...');
+    console.log(chalk.cyan.bold('\nStarting full-load command.'));
     if (!mysqlDataSource.isInitialized) await mysqlDataSource.initialize();
     if (!sqliteDataSource.isInitialized) await sqliteDataSource.initialize();
     console.log(chalk.green('Databases connected.'));
@@ -338,7 +337,7 @@ export const fullLoadCommand = async () => {
       }
     );
 
-    console.log(chalk.green.bold('Data load complete.'));
+    console.log(chalk.green.bold('\nData load complete.'));
   } catch (error) {
     console.error(chalk.red.bold('Error during full load:', error));
     process.exit(1);

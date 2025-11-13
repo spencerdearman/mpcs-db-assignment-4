@@ -30,7 +30,7 @@ import { generateKey, createDimDate, duration } from "../utils/date.utils";
 
 export const incrementalCommand = async () => {
   try {
-    console.log("Starting incremental load command...");
+    console.log(chalk.cyan.bold("\nStarting incremental command."));
     if (!mysqlDataSource.isInitialized) await mysqlDataSource.initialize();
     if (!sqliteDataSource.isInitialized) await sqliteDataSource.initialize();
     console.log(chalk.green("Databases connected."));
@@ -41,7 +41,7 @@ export const incrementalCommand = async () => {
           transactionalEntityManager.getRepository(SyncState);
 
         /* build key maps */
-        console.log("Building key maps...");
+        console.log(chalk.yellow("\n--- Creating Key Maps ---"));
 
         const actorKeyMap = new Map<number, number>();
         (
@@ -68,12 +68,13 @@ export const incrementalCommand = async () => {
           await transactionalEntityManager.getRepository(DimFilm).find()
         ).forEach((f) => filmKeyMap.set(f.filmId, f.filmKey));
 
-        console.log("Key maps built.");
+        console.log(chalk.green.bold("Key maps created."));
 
         /* sync dimensions */
+        console.log(chalk.yellow("\n--- Syncing Dimensions ---"));
 
-        /* -- Sync Actors -- */
-        console.log("Syncing actors...");
+        /* -- sync actors -- */
+        console.log("Syncing actors.");
         const targetActorRepo =
           transactionalEntityManager.getRepository(DimActor);
         let lastSync = await syncStateRepo.findOneBy({ tableName: "actor" });
@@ -100,14 +101,14 @@ export const incrementalCommand = async () => {
           }
           const savedActors = await targetActorRepo.save(actorsToSave);
           savedActors.forEach((a) => actorKeyMap.set(a.actorId, a.actorKey));
-          console.log(`Synced ${savedActors.length} actors.`);
+          console.log(chalk.green(`Synced ${savedActors.length} actors.`));
         } else {
-          console.log("No new actors to sync.");
+          console.log(chalk.blue("No new actors to sync."));
         }
         await syncStateRepo.save({ tableName: "actor", lastRun: new Date() });
 
-        /* -- Sync Categories -- */
-        console.log("Syncing categories...");
+        /* -- sync sategories -- */
+        console.log("Syncing categories.");
         const targetCategoryRepo =
           transactionalEntityManager.getRepository(DimCategory);
         lastSync = await syncStateRepo.findOneBy({ tableName: "category" });
@@ -137,9 +138,9 @@ export const incrementalCommand = async () => {
           savedCategories.forEach((c) =>
             categoryKeyMap.set(c.categoryId, c.categoryKey)
           );
-          console.log(`Synced ${savedCategories.length} categories.`);
+          console.log(chalk.green(`Synced ${savedCategories.length} categories.`));
         } else {
-          console.log("No new categories to sync.");
+          console.log(chalk.blue("No new categories to sync."));
         }
         await syncStateRepo.save({
           tableName: "category",
@@ -175,9 +176,9 @@ export const incrementalCommand = async () => {
           }
           const savedStores = await targetStoreRepo.save(storesToSave);
           savedStores.forEach((s) => storeKeyMap.set(s.storeId, s.storeKey));
-          console.log(`Synced ${savedStores.length} stores.`);
+          console.log(chalk.green(`Synced ${savedStores.length} stores.`));
         } else {
-          console.log("No new stores to sync.");
+          console.log(chalk.blue("No new stores to sync."));
         }
         await syncStateRepo.save({ tableName: "store", lastRun: new Date() });
 
@@ -216,9 +217,9 @@ export const incrementalCommand = async () => {
           savedCustomers.forEach((c) =>
             customerKeyMap.set(c.customerId, c.customerKey)
           );
-          console.log(`Synced ${savedCustomers.length} customers.`);
+          console.log(chalk.green(`Synced ${savedCustomers.length} customers.`));
         } else {
-          console.log("No new customers to sync.");
+          console.log(chalk.blue("No new customers to sync."));
         }
         await syncStateRepo.save({
           tableName: "customer",
@@ -257,9 +258,9 @@ export const incrementalCommand = async () => {
           }
           const savedFilms = await targetFilmRepo.save(filmsToSave);
           savedFilms.forEach((f) => filmKeyMap.set(f.filmId, f.filmKey));
-          console.log(`Synced ${savedFilms.length} films.`);
+          console.log(chalk.green(`Synced ${savedFilms.length} films.`));
         } else {
-          console.log("No new films to sync.");
+          console.log(chalk.blue("No new films to sync."));
         }
         await syncStateRepo.save({ tableName: "film", lastRun: new Date() });
 
@@ -310,9 +311,9 @@ export const incrementalCommand = async () => {
           await transactionalEntityManager
             .getRepository(DimDate)
             .save(newDimDates);
-          console.log(`Loaded ${newDimDates.length} new dates into dim_date.`);
+          console.log(chalk.green(`Loaded ${newDimDates.length} new dates into dim_date.`));
         } else {
-          console.log("No new dates to add.");
+          console.log(chalk.blue("No new dates to add."));
         }
         await syncStateRepo.save({
           tableName: "dim_date_sync",
@@ -347,9 +348,9 @@ export const incrementalCommand = async () => {
             .filter((b) => b.filmKey && b.actorKey);
 
           await targetFilmActorRepo.save(bridgeToSave);
-          console.log(`Synced ${bridgeToSave.length} film-actor links.`);
+          console.log(chalk.green(`Synced ${bridgeToSave.length} film-actor links.`));
         } else {
-          console.log("No new film-actor links to sync.");
+          console.log(chalk.blue("No new film-actor links to sync."));
         }
         await syncStateRepo.save({
           tableName: "bridge_film_actor",
@@ -382,9 +383,9 @@ export const incrementalCommand = async () => {
             .filter((b) => b.filmKey && b.categoryKey);
 
           await targetFilmCategoryRepo.save(bridgeToSave);
-          console.log(`Synced ${bridgeToSave.length} film-category links.`);
+          console.log(chalk.green(`Synced ${bridgeToSave.length} film-category links.`));
         } else {
-          console.log("No new film-category links to sync.");
+          console.log(chalk.blue("No new film-category links to sync."));
         }
         await syncStateRepo.save({
           tableName: "bridge_film_category",
@@ -442,9 +443,9 @@ export const incrementalCommand = async () => {
             }
           }
           await targetRentalRepo.save(rentalsToSave);
-          console.log(`Synced ${rentalsToSave.length} rentals.`);
+          console.log(chalk.green(`Synced ${rentalsToSave.length} rentals.`));
         } else {
-          console.log("No new rentals to sync.");
+          console.log(chalk.blue("No new rentals to sync."));
         }
         await syncStateRepo.save({
           tableName: "fact_rental",
@@ -495,9 +496,9 @@ export const incrementalCommand = async () => {
             }
           }
           await targetPaymentRepo.save(paymentsToSave);
-          console.log(`Synced ${paymentsToSave.length} payments.`);
+          console.log(chalk.green(`Synced ${paymentsToSave.length} payments.`));
         } else {
-          console.log("No new payments to sync.");
+          console.log(chalk.blue("No new payments to sync."));
         }
         await syncStateRepo.save({
           tableName: "fact_payment",
@@ -506,9 +507,9 @@ export const incrementalCommand = async () => {
       }
     );
 
-    console.log("Incremental load complete.");
+    console.log(chalk.green.bold("\nIncremental load complete."));
   } catch (error) {
-    console.error("Error during incremental load:", error);
+    console.error(chalk.red.bold("Error during incremental load:", error));
     process.exit(1);
   } finally {
     /* destroy if not in a test environment */

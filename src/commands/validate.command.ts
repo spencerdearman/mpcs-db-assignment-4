@@ -10,7 +10,7 @@ import {
 
 /* --- validate command --- */
 export const validateCommand = async () => {
-  console.log(chalk.cyan('Starting validation command...'));
+  console.log(chalk.cyan.bold('\nStarting validate command.'));
 
   /* time window and format date strings */
   const thirtyDaysAgo = new Date();
